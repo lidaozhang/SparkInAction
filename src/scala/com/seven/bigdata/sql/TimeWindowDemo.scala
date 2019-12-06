@@ -1,6 +1,8 @@
 package com.seven.bigdata.sql
 
 import com.seven.bigdata.config.SparkSessionConfig
+import org.apache.spark.sql.functions.window
+import org.apache.spark.sql.functions.avg
 
 /**
  * 基于时间的窗口分析
@@ -24,9 +26,15 @@ object TimeWindowDemo {
     val stocks2016 = stocksDF.filter("year(Date)==2016")
     stocks2016.show()
 
+    import spark.implicits._
 
     //计算平均值
-//    val tumblingWindowDS = stocks2016.groupBy(window(stocks2016.col("Date"),"1 week"))
+    val tumblingWindowDS = stocks2016.groupBy(
+      window(stocks2016.col("Date"),"1 week")
+    ).agg(avg("Close").as("weekly_average"))
+
+    print("计算平均值")
+    tumblingWindowDS.show()
 
     //
 
